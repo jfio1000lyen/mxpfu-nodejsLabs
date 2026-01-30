@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 
@@ -88,11 +89,23 @@ router.put("/:email", (req, res) => {
     }
 });
 
+router.get("/lastName/:lastName", (req, res) => {
+    // Extract the lastName parameter from the request URL
+    const lastName = req.params.lastName;
+    // Filter the users array to find users whose lastName matches the extracted lastName parameter
+    let filtered_lastname = users.filter((user) => user.lastName === lastName);
+    // Send the filtered_lastname array as the response to the client
+    res.send(filtered_lastname);
+});
 
 // DELETE request: Delete a user by email ID
 router.delete("/:email", (req, res) => {
-    // Copy the code here
-    res.send("Yet to be implemented")//This line is to be replaced with actual return value
-  });
+    // Extract the email parameter from the request URL
+    const email = req.params.email;
+    // Filter the users array to exclude the user with the specified email
+    users = users.filter((user) => user.email != email);
+    // Send a success message as the response, indicating the user has been deleted
+    res.send(`User with the email ${email} deleted.`);
+});
 
 module.exports=router;
