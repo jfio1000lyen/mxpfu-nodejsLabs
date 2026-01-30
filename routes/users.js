@@ -1,4 +1,5 @@
 
+
 const express = require('express');
 const router = express.Router();
 
@@ -6,7 +7,7 @@ const router = express.Router();
 let users = [
     {
         firstName: "John",
-        lastName: "wick",
+        lastName: "white",
         email:"johnwick@gamil.com",
         DOB:"22-01-1990",
     },
@@ -41,6 +42,32 @@ router.get("/:email",(req,res)=>{
     res.send(filtered_users);
 });
 
+router.get("/lastName/:lastName", (req, res) => {
+    // Extract the lastName parameter from the request URL
+    const lastName = req.params.lastName;
+    // Filter the users array to find users whose lastName matches the extracted lastName parameter
+    let filtered_lastname = users.filter((user) => user.lastName === lastName);
+    // Send the filtered_lastname array as the response to the client
+    res.send(filtered_lastname);
+});
+
+// Function to convert a date string in the format "dd-mm-yyyy" to a Date object
+function getDateFromString(strDate) {
+    let [dd, mm, yyyy] = strDate.split('-');
+    return new Date(yyyy + "/" + mm + "/" + dd);
+}
+
+// Define a route handler for GET requests to the "/sort" endpoint
+router.get("/sort", (req, res) => {
+    // Sort the users array by DOB in ascending order
+    let sorted_users = users.sort(function(a, b) {
+        let d1 = getDateFromString(a.DOB);
+        let d2 = getDateFromString(b.DOB);
+        return d1 - d2;
+    });
+    // Send the sorted_users array as the response to the client
+    res.send(sorted_users);
+});
 
 // POST request: Create a new user
 router.post("/",(req,res)=>{
@@ -76,7 +103,20 @@ router.put("/:email", (req, res) => {
         /*
         Include similar code here for updating other attributes as needed
         */
-        
+        let lastName = req.query.lastName;    
+        if (lastName) {
+            filtered_user.lastName = lastName;
+        }
+
+        let firstName = req.query.firstName;    
+        if (firstName) {
+            filtered_user.firstName = firstName;
+        }
+
+        let email = req.query.email;    
+        if (email) {
+            filtered_user.email = email;
+        }
         // Replace old user entry with updated user
         users = users.filter((user) => user.email != email);
         users.push(filtered_user);
@@ -87,15 +127,6 @@ router.put("/:email", (req, res) => {
         // Send error message if no user found
         res.send("Unable to find user!");
     }
-});
-
-router.get("/lastName/:lastName", (req, res) => {
-    // Extract the lastName parameter from the request URL
-    const lastName = req.params.lastName;
-    // Filter the users array to find users whose lastName matches the extracted lastName parameter
-    let filtered_lastname = users.filter((user) => user.lastName === lastName);
-    // Send the filtered_lastname array as the response to the client
-    res.send(filtered_lastname);
 });
 
 // DELETE request: Delete a user by email ID
